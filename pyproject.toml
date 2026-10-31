@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claude-records"
+version = "0.1.0"
+description = "Web-based tool for browsing Claude Code conversation records"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+dependencies = [
+    "flask",
+    "jieba",
+]
+
+[project.optional-dependencies]
+semantic = ["numpy"]
+
+[tool.setuptools]
+py-modules = ["viewer"]
+packages = ["backend"]
+
+# Ship the built frontend (run `npm run build` in frontend/ first)
+[tool.setuptools.package-data]
+backend = ["static/**/*"]
+
+[project.scripts]
+claude-records = "viewer:main"

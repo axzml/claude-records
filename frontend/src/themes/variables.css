@@ -1,0 +1,129 @@
+/*
+ * Design tokens. Two schemes share one layout:
+ *   light = "paper"    warm paper, ink text, terracotta accent
+ *   dark  = "graphite" near-black panels, hairlines, amber accent
+ * Components only use these variables, never raw colours.
+ */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f2ea;
+  --bg-raised: #fbf9f4;
+  --bg-sunken: #efe9dd;
+  --bg-hover: rgba(80, 60, 30, 0.05);
+  --bg-active: #fbf9f4;
+  --line: #e2dacb;
+  --line-strong: #d3c8b5;
+  --ink: #221d17;
+  --ink-2: #5b5246;
+  --ink-3: #958a7a;
+  --prose: #2e2820;
+  --accent: #b4532a;
+  --accent-soft: rgba(180, 83, 42, 0.1);
+  --accent-ink: #fff;
+  --mark-bg: #f6e3a8;
+  --mark-ink: #4a3a10;
+  --ok: #5f8f5b;
+  --warn: #c2913a;
+  --shadow-sm: 0 1px 2px rgba(60, 40, 20, 0.06);
+  --shadow-pop: 0 12px 32px rgba(60, 40, 20, 0.14), 0 2px 6px rgba(60, 40, 20, 0.06);
+  --code-bg: #f1ece2;
+  --prompt-bg: #fffdf8;
+  --prompt-line: #e6dccb;
+  --hl-comment: #9a8f7e;
+  --hl-keyword: #a3461f;
+  --hl-string: #4f7a3c;
+  --hl-number: #8a5a9e;
+  --hl-title: #2d5f8a;
+  --hl-attr: #9c6a1f;
+  --grain-opacity: 0.35;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0c0c0e;
+  --bg-raised: #17171b;
+  --bg-sunken: #1d1d22;
+  --bg-hover: rgba(255, 255, 255, 0.04);
+  --bg-active: #1c1c21;
+  --line: #222228;
+  --line-strong: #2e2e36;
+  --ink: #ececf1;
+  --ink-2: #a3a3ad;
+  --ink-3: #6b6b76;
+  --prose: #d5d5dc;
+  --accent: #f2a65a;
+  --accent-soft: rgba(242, 166, 90, 0.12);
+  --accent-ink: #1a1007;
+  --mark-bg: rgba(242, 166, 90, 0.28);
+  --mark-ink: #ffe2c2;
+  --ok: #4ade80;
+  --warn: #f2c35a;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-pop: 0 16px 40px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  --code-bg: #111114;
+  --prompt-bg: #16161a;
+  --prompt-line: #2a2a31;
+  --hl-comment: #5c5c66;
+  --hl-keyword: #f2a65a;
+  --hl-string: #9ece6a;
+  --hl-number: #c3a6ff;
+  --hl-title: #7aa2f7;
+  --hl-attr: #e0af68;
+  --grain-opacity: 0;
+}
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', Consolas, 'Microsoft YaHei', monospace;
+  --radius: 8px;
+  --radius-lg: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* Faint paper grain (light scheme only; opacity 0 in dark) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  opacity: var(--grain-opacity);
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .45 0 0 0 0 .4 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+input { font: inherit; color: inherit; }
+
+::selection { background: var(--accent-soft); }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 10px; border: 3px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+/* Syntax highlighting (highlight.js classes), driven by the scheme tokens */
+.hljs { color: var(--prose); background: none; }
+.hljs-comment, .hljs-quote { color: var(--hl-comment); font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-doctag, .hljs-meta .hljs-keyword { color: var(--hl-keyword); }
+.hljs-string, .hljs-regexp, .hljs-addition, .hljs-meta .hljs-string { color: var(--hl-string); }
+.hljs-number, .hljs-symbol, .hljs-bullet, .hljs-variable.constant_ { color: var(--hl-number); }
+.hljs-title, .hljs-title.function_, .hljs-section, .hljs-name { color: var(--hl-title); }
+.hljs-attr, .hljs-attribute, .hljs-built_in, .hljs-type, .hljs-property, .hljs-params { color: var(--hl-attr); }
+.hljs-deletion { color: #c0504d; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 600; }

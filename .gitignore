@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Local data: transcripts index and user preferences (private)
+data/
+*.db
+
+# Frontend
+node_modules/
+backend/static/
+
+# Local AI tooling state
+.omc/
+.superpowers/
+.playwright-mcp/
+.codewhale/
+
+# Ad-hoc screenshots / test pages in the repo root
+/*.png
+/*.html
