@@ -823,7 +823,13 @@
   overflow: hidden;
   overflow-wrap: anywhere;
 }
-.search-result-snippet mark { background: var(--mark-bg); color: var(--mark-ink); border-radius: 3px; padding: 0 2px; }
+.search-result-snippet mark {
+  background: var(--mark-bg);
+  color: var(--mark-ink);
+  border-radius: 2px;
+  /* shadow instead of padding: highlighting part of a word must not split it apart */
+  box-shadow: 0 0 0 1.5px var(--mark-bg);
+}
 
 .search-result-context {
   display: flex;

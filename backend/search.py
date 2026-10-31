@@ -6,6 +6,23 @@ from backend import embedding
 from backend.models import get_db, format_command_message
 
 
+_MD_PATTERNS = [
+    (re.compile(r'```[^\n]*'), ' '),                   # code fence markers (+ language)
+    (re.compile(r'!\[[^\]]*\]\([^)]*\)'), ' '),        # images
+    (re.compile(r'\[([^\]]*)\]\([^)]*\)'), r'\1'),     # links -> their text
+    (re.compile(r'(\*\*|__|~~|`)'), ''),               # emphasis / inline code marks
+    (re.compile(r'^\s{0,3}(#{1,6}|>|[-*+]|\d+\.)\s+', re.M), ''),  # headings, quotes, list marks
+]
+
+
+def plain_text(markdown: str) -> str:
+    """Markdown -> readable plain text for one-line previews and snippets."""
+    text = markdown or ''
+    for pattern, repl in _MD_PATTERNS:
+        text = pattern.sub(repl, text)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
 def segment_query(query: str) -> str:
     """Segment a search query with jieba."""
     return ' '.join(jieba.cut(query))
@@ -227,7 +244,7 @@ def _search_keyword(conn, query, mode, where, params, project_id, page, page_siz
         ORDER BY rank
         LIMIT ? OFFSET ?""", params + [page_size, (page - 1) * page_size]).fetchall()
 
-    results = [_build_result(conn, row, make_snippet(format_command_message(row['content']), query),
+    results = [_build_result(conn, row, make_snippet(plain_text(format_command_message(row['content'])), query),
                              'keyword') for row in rows]
     return {'total': total, 'results': results, 'facets': facets}
 
@@ -330,10 +347,10 @@ def _search_hybrid(conn, query, where, params, project_id, page, page_size) -> d
             continue
         content = format_command_message(row['content'])
         if mid in keyword_set:
-            snippet = make_snippet(content, query)
+            snippet = make_snippet(plain_text(content), query)
             match = 'both' if mid in semantic else 'keyword'
         else:
-            snippet = html.escape(_semantic_snippet(content, semantic[mid]))
+            snippet = html.escape(plain_text(_semantic_snippet(content, semantic[mid])))
             match = 'semantic'
         results.append(_build_result(conn, row, snippet, match))
     return {'total': len(fused), 'results': results, 'facets': facets, 'semantic': True}
@@ -354,7 +371,7 @@ def resolve_context(conn, row) -> dict | None:
                 break
             if parent_row['type'] == 'user':
                 return {
-                    'question': parent_row['content'][:200] if parent_row['content'] else None,
+                    'question': plain_text(parent_row['content'])[:200] if parent_row['content'] else None,
                     'answer_preview': None,
                 }
             parent = parent_row['parent_uuid']
@@ -369,7 +386,7 @@ def resolve_context(conn, row) -> dict | None:
         if child:
             return {
                 'question': None,
-                'answer_preview': child['content'][:200] if child['content'] else None,
+                'answer_preview': plain_text(child['content'])[:200] if child['content'] else None,
             }
 
     return None
